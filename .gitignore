@@ -63,3 +63,4 @@ Homestead.json
 # Build artifacts
 /dist/
 /build/
+.env
