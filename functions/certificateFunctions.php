@@ -3,17 +3,50 @@ require_once __DIR__ . '/../config/db.php';
 
 function createCertificate($data) {
     $pdo = getDbConnection();
-    $sql = "INSERT INTO certificates (
-        name, fatherName, motherName, dateOfBirth, aadharCardNumber, enrolmentNumber,
-        enrolmentDate, courseName, courseStatus, academicDivision, courseDuration,
-        totalObtainedMarks, overallPercentage, grade, finalResult,
-        certificateIssueDate, trainingCentre, avatar
-    ) VALUES (
-        :name, :fatherName, :motherName, :dateOfBirth, :aadharCardNumber, :enrolmentNumber,
-        :enrolmentDate, :courseName, :courseStatus, :academicDivision, :courseDuration,
-        :totalObtainedMarks, :overallPercentage, :grade, :finalResult,
-        :certificateIssueDate, :trainingCentre, :avatar
-    )";
+
+    // Required fields
+    $requiredFields = [
+        'name',
+        'fatherName',
+        'dateOfBirth',
+        'aadharCardNumber',
+        'enrolmentNumber',
+        'courseName'
+    ];
+    
+
+    // Check required fields
+    foreach ($requiredFields as $field) {
+        if (empty($data[$field])) {
+            throw new InvalidArgumentException("Field '$field' is required.");
+        }
+    }
+
+    // All possible fields in the table
+    $allFields = [
+        'name', 'fatherName', 'motherName', 'dateOfBirth', 'aadharCardNumber', 'enrolmentNumber',
+        'enrolmentDate', 'courseName', 'courseStatus', 'academicDivision', 'courseDuration',
+        'totalObtainedMarks', 'overallPercentage', 'grade', 'finalResult',
+        'certificateIssueDate', 'trainingCentre', 'avatar'
+    ];
+
+    // Prepare insert fields and values
+    $insertFields = [];
+    $insertValues = [];
+    $insertParams = [];
+
+    foreach ($allFields as $field) {
+        $insertFields[] = $field;
+        if (isset($data[$field]) && $data[$field] !== '') {
+            $insertValues[] = ":$field";
+            $insertParams[$field] = $data[$field];
+        } else {
+            $insertValues[] = "NULL";
+        }
+    }
+
+    $sql = "INSERT INTO certificates (" . implode(', ', $insertFields) . ")
+            VALUES (" . implode(', ', $insertValues) . ")";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($data);
@@ -67,6 +100,7 @@ function getAllCertificates($filters = [], $page = 1, $pageSize = 10) {
     $stmt->execute();
 
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
 
     // Get total count for pagination info (without limit)
     $countSql = "SELECT COUNT(*) FROM certificates $where";
