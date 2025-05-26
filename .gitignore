@@ -1,0 +1,65 @@
+# Composer dependencies
+/vendor/
+
+# Node modules (if using frontend tooling)
+/node_modules/
+
+# Environment and config files
+.env
+.env.*.local
+*.env.php
+.env.php
+
+# IDEs and editors
+*.sublime*
+*.swp
+*.bak
+*.tmp
+*.idea/
+*.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Log files
+*.log
+
+# Cache and session files
+/cache/
+/storage/
+/tmp/
+/sessions/
+
+# PHPUnit test results
+/phpunit.xml
+/phpunit.result.cache
+
+# Laravel specific
+/public/storage
+/storage/*.key
+*.sqlite
+homestead.yaml
+Homestead.json
+
+# CodeIgniter specific
+/application/logs/*
+/application/cache/*
+
+# Uploads (optional - adjust based on your project)
+/uploads/
+/files/
+
+# Backup files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Build artifacts
+/dist/
+/build/
