@@ -1,7 +1,11 @@
 <?php
+include __DIR__ . '/middleware/cors.php';
+
+
+
+
 require_once __DIR__ . '/functions/certificateFunctions.php';
 
-include __DIR__ . '/middleware/cors.php';
 
 header("Content-Type: application/json");
 
