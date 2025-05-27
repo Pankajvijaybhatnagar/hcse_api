@@ -24,3 +24,31 @@ function verifyJWT($token) {
         return false;
     }
 }
+
+
+
+function requireAuth() {
+    $headers = getallheaders();
+
+    if (!isset($headers['Authorization'])) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Authorization header missing']);
+        exit;
+    }
+
+    if (preg_match('/Bearer\s(\S+)/', $headers['Authorization'], $matches)) {
+        $token = $matches[1];
+        $decoded = verifyJWT($token);
+        if (!$decoded) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Invalid or expired token']);
+            exit;
+        }
+
+        return $decoded; // return full JWT payload (can include user ID, roles, etc.)
+    } else {
+        http_response_code(401);
+        echo json_encode(['error' => 'Malformed Authorization header']);
+        exit;
+    }
+}

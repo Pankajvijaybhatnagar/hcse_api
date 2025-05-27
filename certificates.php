@@ -1,8 +1,14 @@
 <?php
 include __DIR__ . '/middleware/cors.php';
+include __DIR__ . '/middleware/auth.php';
 require_once __DIR__ . '/functions/certificateFunctions.php';
 
 header("Content-Type: application/json");
+
+
+// Authenticate the user
+$user = requireAuth();
+
 
 $method = $_SERVER['REQUEST_METHOD'];
 $path = $_SERVER['REQUEST_URI'];
