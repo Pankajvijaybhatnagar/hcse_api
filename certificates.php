@@ -14,12 +14,7 @@ if (preg_match('/\/certificates\/(\d+)/', $path, $matches)) {
 
 switch ($method) {
     case 'GET':
-        if ($enrollmentIid) {
-            $cert = getCertificateById($enrollmentIid);
-            echo json_encode($cert ?: ['error' => 'Certificate not found']);
-        } else {
-            echo json_encode(getAllCertificates());
-        }
+        echo json_encode(getAllCertificates());
         break;
 
     case 'POST':
