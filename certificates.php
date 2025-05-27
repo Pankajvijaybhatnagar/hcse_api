@@ -14,8 +14,33 @@ if (preg_match('/\/certificates\/(\d+)/', $path, $matches)) {
 
 switch ($method) {
     case 'GET':
-        echo json_encode(getAllCertificates());
+        // Extract filters from $_GET, excluding page and pageSize
+        $allowedFilters = [
+            'name', 'fatherName', 'motherName', 'dateOfBirth',
+            'aadharCardNumber', 'enrolmentNumber', 'enrolmentDate', 'courseName',
+            'courseStatus', 'academicDivision', 'courseDuration', 'totalObtainedMarks',
+            'overallPercentage', 'grade', 'finalResult', 'certificateIssueDate',
+            'trainingCentre'
+        ];
+    
+        $filters = [];
+        foreach ($allowedFilters as $key) {
+            if (isset($_GET[$key]) && $_GET[$key] !== '') {
+                $filters[$key] = $_GET[$key];
+            }
+        }
+    
+        // Pagination parameters
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+        $pageSize = isset($_GET['pageSize']) && is_numeric($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
+    
+        // Get data with filters and pagination
+        $response = getAllCertificates($filters, $page, $pageSize);
+    
+        header('Content-Type: application/json');
+        echo json_encode($response);
         break;
+    
 
     case 'POST':
         $data = json_decode(file_get_contents('php://input'), true);
