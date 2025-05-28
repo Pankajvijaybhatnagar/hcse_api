@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 
 
 // Authenticate the user
-$user = requireAuth();
+// $user = requireAuth();
 
 
 $method = $_SERVER['REQUEST_METHOD'];
