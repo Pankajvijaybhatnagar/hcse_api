@@ -48,42 +48,49 @@ switch ($method) {
         break;
     
 
-   case 'POST':
-    header('Content-Type: application/json');
-    try {
-        $data = json_decode(file_get_contents('php://input'), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidArgumentException('Invalid JSON input.');
-        }
+    case 'POST':
+        header('Content-Type: application/json');
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new InvalidArgumentException('Invalid JSON input.');
+            }
 
-        $insertedId = createCertificate($data);
-        echo json_encode(['success' => true, 'message' => 'Certificate created', 'id' => $insertedId]);
-    } catch (Exception $e) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Error creating certificate',
-            'error' => $e->getMessage()
-        ]);
-    }
-    break;
+            $insertedId = createCertificate($data);
+            echo json_encode(['success' => true, 'message' => 'Certificate created', 'id' => $insertedId]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error creating certificate',
+                'error' => $e->getMessage()
+            ]);
+        }
+        break;
 
 
     case 'PUT':
-    case 'PATCH':
+        $id=null;
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id = isset($data['id']) ? $data['id'] : null;
         if (!$id) {
             http_response_code(400);
             echo json_encode(['error' => 'Certificate ID required']);
             exit;
         }
-        $data = json_decode(file_get_contents('php://input'), true);
+        // removing id from data to avoid updating it
+        unset($data['id']);
+        if (empty($data)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'No data provided for update']);
+            exit;
+        }
         if (updateCertificate($id, $data)) {
             echo json_encode(['message' => 'Certificate updated']);
         } else {
             echo json_encode(['error' => 'Update failed']);
         }
         break;
-
     case 'DELETE':
         if (!$id) {
             http_response_code(400);
