@@ -3,7 +3,7 @@
 header("Access-Control-Allow-Origin: *");
 
 // If your frontend uses POST, PUT, DELETE etc., also add:
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST,PUT, OPTIONS");
 
 // Allow custom headers like Content-Type
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
