@@ -48,11 +48,26 @@ switch ($method) {
         break;
     
 
-    case 'POST':
+   case 'POST':
+    header('Content-Type: application/json');
+    try {
         $data = json_decode(file_get_contents('php://input'), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidArgumentException('Invalid JSON input.');
+        }
+
         $insertedId = createCertificate($data);
-        echo json_encode(['message' => 'Certificate created', 'id' => $insertedId]);
-        break;
+        echo json_encode(['success' => true, 'message' => 'Certificate created', 'id' => $insertedId]);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error creating certificate',
+            'error' => $e->getMessage()
+        ]);
+    }
+    break;
+
 
     case 'PUT':
     case 'PATCH':

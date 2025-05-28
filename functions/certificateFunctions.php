@@ -13,7 +13,6 @@ function createCertificate($data) {
         'enrolmentNumber',
         'courseName'
     ];
-    
 
     // Check required fields
     foreach ($requiredFields as $field) {
@@ -49,7 +48,7 @@ function createCertificate($data) {
             VALUES (" . implode(', ', $insertValues) . ")";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($data);
+    $stmt->execute($insertParams); // ✅ Corrected: matches :placeholders
     return $pdo->lastInsertId();
 }
 
