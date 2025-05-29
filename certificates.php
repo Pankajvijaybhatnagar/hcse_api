@@ -86,7 +86,7 @@ switch ($method) {
             exit;
         }
         if (updateCertificate($id, $data)) {
-            echo json_encode(['message' => 'Certificate updated']);
+            echo json_encode(['success' => true, 'message' => 'Certificate updated']);
         } else {
             echo json_encode(['error' => 'Update failed']);
         }

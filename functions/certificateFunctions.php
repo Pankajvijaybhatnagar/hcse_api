@@ -14,11 +14,22 @@ function createCertificate($data) {
         'courseName'
     ];
 
-    // Check required fields
     foreach ($requiredFields as $field) {
         if (empty($data[$field])) {
             throw new InvalidArgumentException("Field '$field' is required.");
         }
+    }
+
+    // Check for duplicates using aadharCardNumber or enrolmentNumber
+    $stmt = $pdo->prepare("SELECT id FROM certificates WHERE aadharCardNumber = :aadhar OR enrolmentNumber = :enrolment");
+    $stmt->execute([
+        ':aadhar' => $data['aadharCardNumber'],
+        ':enrolment' => $data['enrolmentNumber']
+    ]);
+
+    if ($stmt->fetch()) {
+        // Duplicate entry exists
+        throw new Exception('Duplicate entry: A certificate with the same Aadhar Card Number or Enrolment Number already exists.');
     }
 
     // All possible fields in the table
@@ -29,7 +40,6 @@ function createCertificate($data) {
         'certificateIssueDate', 'trainingCentre', 'avatar'
     ];
 
-    // Prepare insert fields and values
     $insertFields = [];
     $insertValues = [];
     $insertParams = [];
@@ -46,11 +56,13 @@ function createCertificate($data) {
 
     $sql = "INSERT INTO certificates (" . implode(', ', $insertFields) . ")
             VALUES (" . implode(', ', $insertValues) . ")";
-
+    
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($insertParams); // ✅ Corrected: matches :placeholders
+    $stmt->execute($insertParams);
+
     return $pdo->lastInsertId();
 }
+
 
 
 function getAllCertificates($filters = [], $page = 1, $pageSize = 10) {
