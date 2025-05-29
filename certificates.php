@@ -62,7 +62,7 @@ switch ($method) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'message' => 'Error creating certificate',
+                'message' => $e->getMessage(),
                 'error' => $e->getMessage()
             ]);
         }

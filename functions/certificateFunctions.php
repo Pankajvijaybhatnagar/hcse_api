@@ -29,7 +29,8 @@ function createCertificate($data) {
 
     if ($stmt->fetch()) {
         // Duplicate entry exists
-        throw new Exception('Duplicate entry: A certificate with the same Aadhar Card Number or Enrolment Number already exists.');
+        http_response_code(402);
+        throw new Exception('Duplicate : Aadhar Card  or Enrolment Number ');
     }
 
     // All possible fields in the table
