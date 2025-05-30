@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 
+
 function createCertificate($data) {
     $pdo = getDbConnection();
 
@@ -20,25 +21,23 @@ function createCertificate($data) {
         }
     }
 
-    // Check for duplicates using aadharCardNumber or enrolmentNumber
-    $stmt = $pdo->prepare("SELECT id FROM certificates WHERE aadharCardNumber = :aadhar OR enrolmentNumber = :enrolment");
+    // Check for duplicates using enrolmentNumber only
+    $stmt = $pdo->prepare("SELECT id FROM certificates WHERE enrolmentNumber = :enrolment");
     $stmt->execute([
-        ':aadhar' => $data['aadharCardNumber'],
         ':enrolment' => $data['enrolmentNumber']
     ]);
 
     if ($stmt->fetch()) {
         // Duplicate entry exists
         http_response_code(402);
-        throw new Exception('Duplicate : Aadhar Card  or Enrolment Number ');
+        throw new Exception('Duplicate: Enrolment Number');
     }
 
-    // All possible fields in the table
+    // All possible fields in the table (updated)
     $allFields = [
         'name', 'fatherName', 'motherName', 'dateOfBirth', 'aadharCardNumber', 'enrolmentNumber',
-        'enrolmentDate', 'courseName', 'courseStatus', 'academicDivision', 'courseDuration',
-        'totalObtainedMarks', 'overallPercentage', 'grade', 'finalResult',
-        'certificateIssueDate', 'trainingCentre', 'avatar'
+        'rollNo', 'courseName', 'courseDuration', 'totalObtainedMarks', 'overallPercentage', 
+        'grade', 'finalResult', 'certificateIssueDate', 'trainingCentre', 'avatar'
     ];
 
     $insertFields = [];
@@ -63,6 +62,9 @@ function createCertificate($data) {
 
     return $pdo->lastInsertId();
 }
+
+
+
 
 
 

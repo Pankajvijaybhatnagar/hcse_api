@@ -23,8 +23,8 @@ switch ($method) {
         // Extract filters from $_GET, excluding page and pageSize
         $allowedFilters = [
             'name', 'fatherName', 'motherName', 'dateOfBirth',
-            'aadharCardNumber', 'enrolmentNumber', 'enrolmentDate', 'courseName',
-            'courseStatus', 'academicDivision', 'courseDuration', 'totalObtainedMarks',
+            'aadharCardNumber', 'enrolmentNumber',  'courseName',
+             'courseDuration', 'totalObtainedMarks',
             'overallPercentage', 'grade', 'finalResult', 'certificateIssueDate',
             'trainingCentre'
         ];
@@ -92,6 +92,10 @@ switch ($method) {
         }
         break;
     case 'DELETE':
+        $id=null;
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id = isset($data['id']) ? $data['id'] : null;
+        
         if (!$id) {
             http_response_code(400);
             echo json_encode(['error' => 'Certificate ID required']);

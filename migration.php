@@ -34,7 +34,7 @@ try {
             fatherName VARCHAR(255) NOT NULL,
             motherName VARCHAR(255) NOT NULL,
             dateOfBirth DATE NOT NULL,
-            aadharCardNumber VARCHAR(20) NOT NULL UNIQUE,
+            aadharCardNumber VARCHAR(20) NULL,
             enrolmentNumber VARCHAR(50) NOT NULL UNIQUE,
             enrolmentDate DATE NOT NULL,
             courseName VARCHAR(255) NOT NULL,
@@ -77,14 +77,57 @@ try {
         $indexName = $index['Key_name'];
 
         // Drop the unique index
-        $sql = "ALTER TABLE certificates DROP INDEX `$indexName` ";
-        $pdo->exec($sql);
+        $sqlDropIndex = "ALTER TABLE certificates DROP INDEX $indexName";
+        $pdo->exec($sqlDropIndex);
+
+        // Modify the columns
+        
 
         echo json_encode(['success' => true, 'message' => '<br>UNIQUE constraint on aadharCardNumber removed successfully.']);
     } else {
         echo json_encode(['success' => true, 'message' => '<br>No UNIQUE constraint found on aadharCardNumber.']);
     }
+    $sqlModifyColumns = "
+        ALTER TABLE certificates
+            MODIFY name VARCHAR(255) NULL,
+            MODIFY fatherName VARCHAR(255) NULL,
+            MODIFY motherName VARCHAR(255) NULL,
+            MODIFY dateOfBirth DATE NULL,
+            MODIFY aadharCardNumber VARCHAR(20) NULL,
+            MODIFY enrolmentNumber VARCHAR(50) NULL,
+            MODIFY enrolmentDate DATE NULL,
+            MODIFY courseName VARCHAR(255) NULL,
+            MODIFY courseStatus VARCHAR(100) NULL,
+            MODIFY academicDivision VARCHAR(100) NULL,
+            MODIFY courseDuration VARCHAR(50) NULL,
+            MODIFY totalObtainedMarks VARCHAR(50) NULL,
+            MODIFY overallPercentage VARCHAR(10) NULL,
+            MODIFY grade VARCHAR(10) NULL,
+            MODIFY finalResult VARCHAR(100) NULL,
+            MODIFY certificateIssueDate DATE NULL,
+            MODIFY trainingCentre VARCHAR(255) NULL,
+            MODIFY avatar VARCHAR(255) NULL
+        ";
+        $pdo->exec($sqlModifyColumns);
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Failed to drop UNIQUE index: ' . $e->getMessage()]);
+}
+
+
+try {
+    $pdo = getDbConnection();
+    // Drop columns courseStatus, academicDivision, enrolmentDate and add nullable rollNo column
+    $sql = "
+    ALTER TABLE certificates
+        DROP COLUMN courseStatus,
+        DROP COLUMN academicDivision,
+        DROP COLUMN enrolmentDate,
+        ADD COLUMN rollNo VARCHAR(100) NULL
+    ";
+    $pdo->exec($sql);
+    echo json_encode(['success' => true, 'message' => 'Columns dropped and rollNo column added successfully.']);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Failed to update table: ' . $e->getMessage()]);
 }
