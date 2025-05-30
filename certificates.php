@@ -49,7 +49,7 @@ switch ($method) {
     
 
     case 'POST':
-        header('Content-Type: application/json');
+        header('Content-Type: application/json');   
         try {
             $data = json_decode(file_get_contents('php://input'), true);
             if (json_last_error() !== JSON_ERROR_NONE) {

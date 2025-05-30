@@ -59,3 +59,32 @@ try {
     http_response_code(500);
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
+
+
+
+// removing the aadhar unique
+try {
+    $pdo = getDbConnection();
+
+    // Check if the unique index exists on aadharCardNumber
+    $stmt = $pdo->query("
+        SHOW INDEX FROM certificates 
+        WHERE Non_unique = 0 AND Column_name = 'aadharCardNumber'
+    ");
+    $index = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($index) {
+        $indexName = $index['Key_name'];
+
+        // Drop the unique index
+        $sql = "ALTER TABLE certificates DROP INDEX `$indexName` ";
+        $pdo->exec($sql);
+
+        echo json_encode(['success' => true, 'message' => '<br>UNIQUE constraint on aadharCardNumber removed successfully.']);
+    } else {
+        echo json_encode(['success' => true, 'message' => '<br>No UNIQUE constraint found on aadharCardNumber.']);
+    }
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Failed to drop UNIQUE index: ' . $e->getMessage()]);
+}
