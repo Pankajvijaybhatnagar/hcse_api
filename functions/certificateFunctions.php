@@ -146,18 +146,34 @@ function getCertificateById($enrollmentIid) {
 
 function updateCertificate($id, $data) {
     $pdo = getDbConnection();
-    $fields = '';
-    foreach ($data as $key => $value) {
-        $fields .= "$key = :$key, ";
-    }
-    $fields = rtrim($fields, ', ');
 
-    $sql = "UPDATE certificates SET $fields WHERE id = :id";
-    $data['id'] = $id;
+    // All allowed fields (same as in createCertificate)
+    $allFields = [
+        'name', 'fatherName', 'motherName', 'dateOfBirth', 'aadharCardNumber', 'enrolmentNumber',
+        'rollNo', 'courseName', 'courseDuration', 'totalObtainedMarks', 'overallPercentage', 
+        'grade', 'finalResult', 'certificateIssueDate', 'trainingCentre', 'avatar'
+    ];
+
+    $setClauses = [];
+    $params = ['id' => $id];
+
+    foreach ($allFields as $field) {
+        if (isset($data[$field]) && $data[$field] !== '') {
+            $setClauses[] = "$field = :$field";
+            $params[$field] = $data[$field];
+        }
+    }
+
+    if (empty($setClauses)) {
+        throw new InvalidArgumentException("No valid fields provided for update.");
+    }
+
+    $sql = "UPDATE certificates SET " . implode(', ', $setClauses) . " WHERE id = :id";
 
     $stmt = $pdo->prepare($sql);
-    return $stmt->execute($data);
+    return $stmt->execute($params);
 }
+
 
 function deleteCertificate($id) {
     $pdo = getDbConnection();
