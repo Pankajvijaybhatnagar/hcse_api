@@ -131,3 +131,31 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Failed to update table: ' . $e->getMessage()]);
 }
+
+
+try {
+    $pdo = getDbConnection();
+
+    $sql = "
+        CREATE TABLE IF NOT EXISTS inquiries (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            district VARCHAR(100) NOT NULL,
+            state VARCHAR(100) NOT NULL,
+            mobile VARCHAR(15) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            education VARCHAR(100) NOT NULL,
+            course VARCHAR(255) NOT NULL,
+            message TEXT NOT NULL,
+            remark TEXT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ";
+
+    $pdo->exec($sql);
+
+    echo json_encode(['success' => true, 'message' => "Table 'inquiries' created successfully."]);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+}
