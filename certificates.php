@@ -102,7 +102,7 @@ switch ($method) {
             exit;
         }
         if (deleteCertificate($id)) {
-            echo json_encode(['message' => 'Certificate deleted']);
+            echo json_encode(['success'=>true,'message' => 'Certificate deleted']);
         } else {
             echo json_encode(['error' => 'Delete failed']);
         }
