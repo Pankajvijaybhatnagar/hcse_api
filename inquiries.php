@@ -1,6 +1,8 @@
 <?php
 include __DIR__ . '/middleware/cors.php';
 require_once __DIR__ . '/functions/inquiryFunctions.php';
+include __DIR__ . '/middleware/auth.php';
+
 
 header("Content-Type: application/json");
 
@@ -8,6 +10,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
+        
+        // $user = requireAuth();
+
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
 
