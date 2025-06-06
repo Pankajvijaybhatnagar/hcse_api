@@ -5,51 +5,71 @@ require_once __DIR__ . '/../config/db.php';
 function getAllInquiries($page = 1, $pageSize = 10, $filters = []) {
     $pdo = getDbConnection();
 
-    $offset = ($page - 1) * $pageSize;
-
-    // Start building the SQL query
-    $sql = "SELECT * FROM inquiries";
-    $conditions = [];
+    $whereClauses = [];
     $params = [];
 
-    // Check for filters and build conditions
+    // Add dynamic filters
     foreach ($filters as $key => $value) {
-        if (in_array($key, ['name', 'district', 'state', 'mobile', 'email', 'education', 'course', 'message'])) {
-            $conditions[] = "$key LIKE :$key";
-            $params[":$key"] = "%$value%"; // Use LIKE for partial matches
+        if (!empty($value)) {
+            $whereClauses[] = "$key LIKE :$key";
+            $params[$key] = "%$value%"; // using LIKE for partial matching
         }
     }
 
-    // Append conditions to the SQL query if any
-    if (!empty($conditions)) {
-        $sql .= " WHERE " . implode(' AND ', $conditions);
+    // Build WHERE clause
+    $where = '';
+    if (count($whereClauses) > 0) {
+        $where = 'WHERE ' . implode(' AND ', $whereClauses);
     }
 
-    $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+    // Calculate LIMIT and OFFSET for pagination
+    $offset = ($page - 1) * $pageSize;
+    $limitClause = "LIMIT :limit OFFSET :offset";
+
+    // Prepare the SQL query with filters and pagination
+    $sql = "SELECT * FROM inquiries
+            $where
+            ORDER BY id DESC
+            $limitClause";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':limit', $pageSize, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
-    // Bind additional parameters for filters
+    // Bind filter values
     foreach ($params as $key => $value) {
-        $stmt->bindValue($key, $value);
+        $stmt->bindValue(":$key", $value, PDO::PARAM_STR);
     }
 
-    $stmt->execute();
-    $inquiries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Bind limit and offset as integers
+    $stmt->bindValue(':limit', (int)$pageSize, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
 
-    $total = $pdo->query("SELECT COUNT(*) FROM inquiries" . (!empty($conditions) ? " WHERE " . implode(' AND ', $conditions) : ""))->fetchColumn();
+    $stmt->execute();
+
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get total count for pagination info (without limit)
+    $countSql = "SELECT COUNT(*) FROM inquiries $where";
+    $countStmt = $pdo->prepare($countSql);
+    
+    // Bind filter values for count query
+    foreach ($params as $key => $value) {
+        $countStmt->bindValue(":$key", $value, PDO::PARAM_STR);
+    }
+    
+    $countStmt->execute();
+    $totalRecords = (int)$countStmt->fetchColumn();
 
     return [
-        'data' => $inquiries,
+        'data' => $results,
         'pagination' => [
-            'total' => (int)$total,
-            'page' => $page,
-            'pageSize' => $pageSize
+            'currentPage' => (int)$page,
+            'pageSize' => (int)$pageSize,
+            'totalRecords' => $totalRecords,
+            'totalPages' => ceil($totalRecords / $pageSize)
         ]
     ];
 }
+
 
 
 // Create a new inquiry

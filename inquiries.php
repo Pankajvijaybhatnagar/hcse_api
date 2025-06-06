@@ -12,16 +12,18 @@ switch ($method) {
     case 'GET':
         // $user = requireAuth();
 
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $page = (isset($_GET['page']) && $_GET['page']!='') ? (int)$_GET['page'] : 1;
         $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
 
         // Extract filters from query parameters
         $filters = [];
         foreach ($_GET as $key => $value) {
-            if (in_array($key, ['name', 'district', 'state', 'mobile', 'email', 'education', 'course', 'message'])) {
+            if (in_array($key, ['name', 'district', 'state', 'mobile', 'email', 'education', 'course', 'message']) && $value !='') {
                 $filters[$key] = $value;
             }
         }
+
+        
 
         $response = getAllInquiries($page, $pageSize, $filters);
         echo json_encode($response);

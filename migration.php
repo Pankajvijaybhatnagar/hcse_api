@@ -1,4 +1,6 @@
 <?php
+
+include __DIR__ . '/middleware/cors.php';
 header('Content-Type: application/json');
 require_once __DIR__ . '/config/db.php';
 
@@ -158,4 +160,17 @@ try {
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+}
+
+try {
+    $pdo = getDbConnection();
+    $sql = "
+    ALTER TABLE certificates
+        ADD COLUMN seen Boolean(true,false) NULL
+    ";
+    $pdo->exec($sql);
+    echo json_encode(['success' => true, 'message' => 'seen column added successfully.']);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Failed to update table: ' . $e->getMessage()]);
 }
