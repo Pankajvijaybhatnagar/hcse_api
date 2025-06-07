@@ -139,8 +139,8 @@ function getAllCertificates($filters = [], $page = 1, $pageSize = 10) {
 
 function getCertificateById($enrollmentIid) {
     $pdo = getDbConnection();
-    $stmt = $pdo->prepare("SELECT * FROM certificates WHERE enrolmentNumber = ?");
-    $stmt->execute([$enrollmentIid]);
+    $stmt = $pdo->prepare("SELECT * FROM certificates WHERE enrolmentNumber = ? OR rollNo = ?");
+    $stmt->execute([$enrollmentIid,$enrollmentIid]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
