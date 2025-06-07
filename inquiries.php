@@ -10,7 +10,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        // $user = requireAuth();
+        $user = requireAuth();
 
         $page = (isset($_GET['page']) && $_GET['page']!='') ? (int)$_GET['page'] : 1;
         $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
