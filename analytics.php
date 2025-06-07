@@ -48,15 +48,29 @@ try {
     $totalCoursesLastMonth = (int) $stmt->fetchColumn();
 
     $response = [
-        'inquiries' => [
-            'total' => $totalInquiries,
-            'topCourses' => $topInquiriesByCourse,
+        [
+            'name' => 'totalInquiries',
+            'value' => $totalInquiries,
         ],
-        'certificates' => [
-            'total' => $totalCertificates,
-            'topCourses' => $topCertificatesByCourse,
-            'lastMonth' => $totalCertificatesLastMonth,
-            'totalCoursesLastMonth' => $totalCoursesLastMonth,
+        [
+            'name' => 'topInquiriesByCourse',
+            'value' => $topInquiriesByCourse,
+        ],
+        [
+            'name' => 'totalCertificates',
+            'value' => $totalCertificates,
+        ],
+        [
+            'name' => 'topCertificatesByCourse',
+            'value' => $topCertificatesByCourse,
+        ],
+        [
+            'name' => 'totalCertificatesLastMonth',
+            'value' => $totalCertificatesLastMonth,
+        ],
+        [
+            'name' => 'totalCoursesLastMonth',
+            'value' => $totalCoursesLastMonth,
         ]
     ];
 
@@ -69,4 +83,3 @@ try {
     http_response_code(500);
     echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
 }
-
